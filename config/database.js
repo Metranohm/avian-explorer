@@ -15,3 +15,4 @@ db.on("connected", () => {
 });
 
 module.exports = mongoose;
+// Path: config/index.js
