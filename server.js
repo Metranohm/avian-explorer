@@ -1,3 +1,7 @@
+import methodOverride from "method-override";
+import session from "express-session";
+import passport from "passport";
+
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
@@ -30,18 +34,27 @@ app.set("view engine", "ejs");
 app.use(methodOverride("_method"));
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
-
-// passport middleware
+app.use(express.urlencoded({ extended: true }))
+app.use(
+  express.static(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), 'public')
+  )
+)
+// NEW middleware below!
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: 'lax',
+    }
   })
-);
+)
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
+
+// passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
